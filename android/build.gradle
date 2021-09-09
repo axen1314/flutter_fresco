@@ -1,0 +1,17 @@
+group 'org.axen.flutter.fresco.flutter_fresco'
+version '1.0.0'
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 30
+
+    defaultConfig {
+        minSdkVersion 16
+    }
+}
+
+dependencies {
+    implementation project(":flutter_native_image_renderer")
+    api "com.facebook.fresco:fresco:2.4.0"
+}
