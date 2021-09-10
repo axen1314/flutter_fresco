@@ -63,8 +63,9 @@ public class FrescoSurfaceImageRenderer implements ImageRenderer {
         URIParser parser = parsers.get(info.getSourceType());
         if (parser == null) throw new RuntimeException("Not support resource type!");
         ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(parser.parse(info.getSource()));
-        int width = info.getWidth(), height = info.getHeight();
-        if (width > 0 && height > 0) builder.setResizeOptions(new ResizeOptions(width, height));
+        double density = context.getResources().getDisplayMetrics().density;
+        double width = info.getWidth() * density, height = info.getHeight() * density;
+        if (width > 0 && height > 0) builder.setResizeOptions(new ResizeOptions((int) width, (int) height));
         ImageRequest request = builder.build();
         ImagePipeline imagePipeline = Fresco.getImagePipeline();
         final DataSource<CloseableReference<CloseableImage>> dataSource = imagePipeline.fetchDecodedImage(request, context);
