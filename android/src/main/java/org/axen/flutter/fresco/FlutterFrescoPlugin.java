@@ -7,10 +7,11 @@ import org.axen.flutter.texture.FlutterTexturePlugin;
 import org.axen.flutter.texture.constant.SourceType;
 import org.axen.flutter.texture.renderer.ImageRenderer;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.view.TextureRegistry;
 
 /** FlutterFrescoPlugin */
-public class FlutterFrescoPlugin extends FlutterTexturePlugin {
+public class FlutterFrescoPlugin extends FlutterTexturePlugin implements FlutterPlugin {
   private static final String CHANNEL = "org.axen.flutter/flutter_fresco";
 
   @Override
