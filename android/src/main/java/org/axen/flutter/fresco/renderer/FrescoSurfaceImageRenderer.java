@@ -25,15 +25,14 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
-import org.axen.flutter.fresco.flutter_fresco.R;
-import org.axen.flutter.image.renderer.ImageRenderer;
-import org.axen.flutter.image.renderer.constant.SourceType;
-import org.axen.flutter.image.renderer.entity.NativeImage;
-import org.axen.flutter.image.renderer.uri.AssetURIParser;
-import org.axen.flutter.image.renderer.uri.DrawableURIParser;
-import org.axen.flutter.image.renderer.uri.FileURIParser;
-import org.axen.flutter.image.renderer.uri.NetworkURIParser;
-import org.axen.flutter.image.renderer.uri.URIParser;
+import org.axen.flutter.texture.constant.SourceType;
+import org.axen.flutter.texture.entity.NativeImage;
+import org.axen.flutter.texture.renderer.ImageRenderer;
+import org.axen.flutter.texture.uri.AssetURIParser;
+import org.axen.flutter.texture.uri.DrawableURIParser;
+import org.axen.flutter.texture.uri.FileURIParser;
+import org.axen.flutter.texture.uri.NetworkURIParser;
+import org.axen.flutter.texture.uri.URIParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +40,7 @@ import java.util.Map;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.view.TextureRegistry;
 
-public class FrescoSurfaceImageRenderer implements ImageRenderer<Bitmap> {
+public class FrescoSurfaceImageRenderer implements ImageRenderer {
     private final Context context;
     private final TextureRegistry.SurfaceTextureEntry textureEntry;
     private final Map<SourceType, URIParser> parsers;

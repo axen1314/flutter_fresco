@@ -11,7 +11,13 @@ android {
     }
 }
 
+rootProject.allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
 dependencies {
-    implementation project(":flutter_native_image_renderer")
+    api 'com.github.axen1314:flutter_texture_plugin:v1.0.1'
     api "com.facebook.fresco:fresco:2.4.0"
 }
