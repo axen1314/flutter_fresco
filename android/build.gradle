@@ -1,5 +1,5 @@
 group 'org.axen.flutter.fresco.flutter_fresco'
-version '1.0.1'
+version '1.0.1-hotfix-1'
 
 apply plugin: 'com.android.library'
 
