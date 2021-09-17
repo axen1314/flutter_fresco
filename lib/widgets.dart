@@ -106,17 +106,22 @@ class _FrescoState extends State<Fresco> {
   @override
   void initState() {
     super.initState();
-    _load(_fetchWidgetInfo(widget));
+    _load(_fetchWidgetInfo());
   }
 
   @override
   void didUpdateWidget(covariant Fresco oldWidget) {
     super.didUpdateWidget(oldWidget);
-    Map<String, dynamic> info = _fetchWidgetInfo(widget)..["textureId"] = _textureId;
+    Map<String, dynamic> info = _fetchWidgetInfo()..["textureId"] = _textureId;
     if (_prevInfo != null && !_isSameInfo(_prevInfo!, info)) {
       _textureId = null;
       _load(info);
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
 
   @override
@@ -146,12 +151,12 @@ class _FrescoState extends State<Fresco> {
         _textureId = value["textureId"];
         _width = value["width"] * 1.0;
         _height = value["height"] * 1.0;
-        _prevInfo = _fetchWidgetInfo(widget);
+        _prevInfo = _fetchWidgetInfo();
       });
     });
   }
 
-  static Map<String, dynamic> _fetchWidgetInfo(Fresco widget) {
+  Map<String, dynamic> _fetchWidgetInfo() {
     Map<String, dynamic> map = widget.image.resolve();
     map["width"] = widget.width;
     map["height"] = widget.height;

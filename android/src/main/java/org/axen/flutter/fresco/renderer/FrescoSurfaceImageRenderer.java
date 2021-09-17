@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Surface;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,8 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
+import org.axen.flutter.fresco.flutter_fresco.R;
+import org.axen.flutter.texture.constant.BoxFit;
 import org.axen.flutter.texture.constant.SourceType;
 import org.axen.flutter.texture.entity.NativeImage;
 import org.axen.flutter.texture.renderer.ImageRenderer;
@@ -63,8 +66,8 @@ public class FrescoSurfaceImageRenderer implements ImageRenderer {
         URIParser parser = parsers.get(info.getSourceType());
         if (parser == null) throw new RuntimeException("Not support resource type!");
         ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(parser.parse(info.getSource()));
-        double density = context.getResources().getDisplayMetrics().density;
-        double width = info.getWidth() * density, height = info.getHeight() * density;
+        final double density = context.getResources().getDisplayMetrics().density;
+        final double width = info.getWidth() * density, height = info.getHeight() * density;
         if (width > 0 && height > 0) builder.setResizeOptions(new ResizeOptions((int) width, (int) height));
         ImageRequest request = builder.build();
         ImagePipeline imagePipeline = Fresco.getImagePipeline();
@@ -72,20 +75,19 @@ public class FrescoSurfaceImageRenderer implements ImageRenderer {
         try {
             dataSource.subscribe(new BaseBitmapDataSubscriber() {
                 @Override
-                public void onNewResultImpl(@Nullable final Bitmap bitmap) {
+                public void onNewResultImpl(@Nullable Bitmap bitmap) {
                     if (bitmap != null) {
                         SurfaceTexture texture = textureEntry.surfaceTexture();
                         if (surface == null) surface = new Surface(texture);
                         if (surface.isValid()) {
-                            int width = bitmap.getWidth();
-                            int height = bitmap.getHeight();
-                            texture.setDefaultBufferSize(width, height);
-                            draw(surface, bitmap);
+                            texture.setDefaultBufferSize(bitmap.getWidth(), bitmap.getHeight());
+                            Rect dstRect = calculateImageDstRect(bitmap, info);
+                            Rect srcRect = calculateImageSrcRect(bitmap, info, dstRect);
+                            draw(surface, bitmap, srcRect);
                             Map<String, Object> map = new HashMap<>();
                             map.put("textureId", textureEntry.id());
-                            double scaleRatio = info.getScaleRatio();
-                            map.put("width", width / scaleRatio);
-                            map.put("height", height / scaleRatio);
+                            map.put("width", dstRect.width());
+                            map.put("height", dstRect.height());
                             postSuccess(result, map);
                         } else {
                             postError(result,"Surface is invalid!");
@@ -110,6 +112,55 @@ public class FrescoSurfaceImageRenderer implements ImageRenderer {
             postError(result, e.getMessage());
             dataSource.close();
         }
+    }
+
+    private Rect calculateImageSrcRect(Bitmap bitmap, NativeImage info, Rect dstRect) {
+        BoxFit fit = info.getFit();
+        int originWidth = info.getWidth(), originHeight = info.getHeight();
+        int bitmapWidth = bitmap.getWidth(), bitmapHeight = bitmap.getHeight();
+        if ((originWidth >= bitmapWidth && originHeight >= bitmapHeight)
+                || fit == BoxFit.FILL
+                || fit == BoxFit.CONTAIN
+                || fit == BoxFit.SCALE_DOWN) {
+            return null;
+        }
+
+        Rect srcRect;
+        int dstWidth = dstRect.width();
+        int dstHeight = dstRect.height();
+        double wPixelRatio = bitmapWidth * 1.0 / dstWidth;
+        double hPixelRatio = bitmapHeight * 1.0 / dstHeight;
+        if (fit == BoxFit.FIT_WIDTH || (fit == BoxFit.COVER && wPixelRatio <= hPixelRatio)) {
+            int bitmapClipHeight = (int) (dstHeight * wPixelRatio);
+            int top = (int) ((bitmapHeight - bitmapClipHeight) * 0.5);
+            srcRect = new Rect(0, top,  bitmapWidth, top + bitmapClipHeight);
+        } else if (fit == BoxFit.FIT_HEIGHT || (fit == BoxFit.COVER && wPixelRatio > hPixelRatio)) {
+            int bitmapClipWidth = (int) (dstWidth * hPixelRatio);
+            int left = (int) ((bitmapWidth - bitmapClipWidth) * 0.5);
+            srcRect = new Rect(left, 0,  left + bitmapClipWidth, bitmapHeight);
+        } else {
+            int left = (int) ((bitmapWidth - dstWidth) * 0.5);
+            int top = (int) ((bitmapHeight - dstHeight) * 0.5);
+            srcRect = new Rect(left, top, left + dstWidth, top + dstHeight);
+        }
+        return srcRect;
+    }
+
+    private Rect calculateImageDstRect(Bitmap bitmap, NativeImage info) {
+        int originWidth = info.getWidth(), originHeight = info.getHeight();
+        int bitmapWidth = bitmap.getWidth(), bitmapHeight = bitmap.getHeight();
+        if (originHeight >= bitmapHeight && originWidth >= bitmapWidth)
+            return new Rect(0, 0, bitmapWidth, bitmapHeight);
+        BoxFit fit = info.getFit();
+        if (fit == BoxFit.SCALE_DOWN || fit == BoxFit.CONTAIN) {
+            double wRatio = originWidth * 1.0 / bitmapWidth;
+            double hRatio = originHeight * 1.0 / bitmapHeight;
+            double scaleRatio = Math.min(wRatio, hRatio);
+            int width = (int) (bitmapWidth * scaleRatio);
+            int height = (int) (bitmapHeight * scaleRatio);
+            return new Rect(0, 0, width, height);
+        }
+        return new Rect(0, 0, originWidth, originHeight);
     }
 
     protected void postSuccess(final MethodChannel.Result result, final Map<String, Object> map) {
@@ -156,12 +207,12 @@ public class FrescoSurfaceImageRenderer implements ImageRenderer {
         textureEntry.release();
         if (surface != null) surface.release();
     }
-    public void draw(Surface surface, Bitmap image) {
+    public void draw(Surface surface, Bitmap image, Rect srcRect) {
         Rect dstRect = new Rect(0, 0, image.getWidth(), image.getHeight());
-        Canvas canvas = surface.lockCanvas(dstRect);
+        Canvas canvas = surface.lockCanvas(null);
         // Fixed: PNG图片背景默认显示为白色的问题
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-        canvas.drawBitmap(image, null, dstRect, null); //图片的绘制
+        canvas.drawBitmap(image, srcRect, dstRect, null); //图片的绘制
         surface.unlockCanvasAndPost(canvas);
     }
 }
