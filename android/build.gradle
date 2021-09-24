@@ -1,5 +1,5 @@
 group 'org.axen.flutter.fresco.flutter_fresco'
-version '1.0.3'
+version '1.0.4'
 
 apply plugin: 'com.android.library'
 
@@ -18,6 +18,6 @@ rootProject.allprojects {
 }
 
 dependencies {
-    api 'com.github.axen1314:flutter_texture_plugin:v1.0.1'
+    api 'com.github.axen1314:flutter_texture_plugin:v1.0.3'
     api "com.facebook.fresco:fresco:2.4.0"
 }

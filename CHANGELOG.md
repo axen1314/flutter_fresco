@@ -1,3 +1,26 @@
-## 0.0.1
 
-* TODO: Describe initial release.
+## 1.0.4
+
+1. 更新FlutterTexturePlugin
+
+## 1.0.3
+
+1. 支持图片缩放模式
+2. 修复控件屏幕适配问题
+3. 修复热修复图片显示变形问题
+
+## 1.0.2
+
+1. 解决图标显示过小的问题
+
+## 1.0.1
+
+1. 引入FlutterTexturePlugin
+
+## 1.0.0-hotfix-1
+
+1. 修复升级v2版本Plugin提示的问题
+
+## 1.0.0
+
+1. 基础功能版本

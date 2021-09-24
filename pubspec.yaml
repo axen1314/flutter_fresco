@@ -1,6 +1,6 @@
 name: flutter_fresco
 description: Flutter widget which use fresco to load image.
-version: 1.0.3
+version: 1.0.4
 homepage:
 
 environment:
