@@ -32,6 +32,6 @@ android {
 }
 
 dependencies {
-    api 'com.github.axen1314:flutter_texture_plugin:v1.0.4'
+    api 'com.github.axen1314:flutter_texture_plugin:v1.0.5'
     api "com.facebook.fresco:fresco:2.6.0"
 }
