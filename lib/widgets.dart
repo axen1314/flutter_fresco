@@ -83,32 +83,41 @@ class Fresco extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _FrescoState();
+
+  NativeImage get _image => image.resolve()
+    ..fit = fit
+    ..width = width
+    ..height = height;
 }
 
 class _FrescoState extends State<Fresco> {
   NativeImageResult? _imageResult;
-  NativeImage? _prevImage;
 
   static const MethodChannel _channel = const MethodChannel('org.axen.flutter/flutter_fresco');
 
   @override
   void initState() {
     super.initState();
-    _loadImage(_image);
+    _loadImage(widget._image);
   }
 
   @override
   void didUpdateWidget(covariant Fresco oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final NativeImage image = _image;
-    if (_prevImage != null && _prevImage != image) {
-      _loadImage(image, textureId: _imageResult!.textureId);
+    final NativeImage oldImage = oldWidget._image;
+    final NativeImage image = widget._image;
+    if (oldImage != image) {
+      _loadImage(image);
+      _releaseImage(oldImage);
+    } else {
+      _updateImage(_imageResult);
     }
   }
 
   @override
   void dispose() {
     super.dispose();
+    _releaseImage(widget._image);
     _channel.setMethodCallHandler(null);
   }
 
@@ -140,17 +149,26 @@ class _FrescoState extends State<Fresco> {
     );
   }
 
-  void _loadImage(final NativeImage image, {int? textureId}) {
+  void _loadImage(final NativeImage image) {
     Map<String, dynamic> data = image.toMap();
-    _channel.invokeMethod("load", data..['textureId'] = textureId)
+    _channel.invokeMethod("load", data)
         .then((value) {
-      setState(() {
-        _prevImage = image;
-        _imageResult = NativeImageResult(
-            value["textureId"],
-            _caculateImageWidgetSize(value["width"], value["height"])
-        );
-      });
+      int textureId = value["textureId"];
+      int width = value["width"];
+      int height = value["height"];
+      Size size = _caculateImageWidgetSize(width, height);
+      NativeImageResult result = NativeImageResult(textureId, size);
+      _updateImage(result);
+    });
+  }
+
+  void _updateImage(NativeImageResult? result) {
+    setState(() => _imageResult = result);
+  }
+
+  void _releaseImage(NativeImage image) {
+    _channel.invokeMethod("release", {
+      "source": image.source
     });
   }
 
@@ -186,11 +204,6 @@ class _FrescoState extends State<Fresco> {
     }
     return Size(width, height);
   }
-
-  NativeImage get _image => widget.image.resolve()
-    ..fit = widget.fit
-    ..width = widget.width
-    ..height = widget.height;
 }
 
 

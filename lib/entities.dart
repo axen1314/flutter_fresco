@@ -44,10 +44,7 @@ class NativeImage {
   bool operator ==(Object other) {
     if (!(other is NativeImage)) return false;
     return source == other.source
-        && sourceType == other.sourceType
-        && fit == other.fit
-        && width == other.width
-        && height == other.height;
+        && sourceType == other.sourceType;
   }
 
   @override

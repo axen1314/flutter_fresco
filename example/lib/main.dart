@@ -25,14 +25,25 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-            child: Column(
-              children: [
-                Image.network(url, width: 200, height: 200),
-                Fresco.network(url, width: 200, height: 200),
-                Fresco.drawable("R.drawable.ic_bar_back", width: 24, height: 24)
-              ],
-            )
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Image.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 400, height: 400),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.network(url, width: 200, height: 200),
+              Fresco.drawable("R.drawable.ic_bar_back", width: 24, height: 24)
+            ],
+          ),
         ),
       ),
     );
