@@ -15,32 +15,15 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
-import org.axen.flutter.texture.constant.SourceType;
 import org.axen.flutter.texture.entity.NativeImage;
-import org.axen.flutter.texture.provider.ImageProvider;
-import org.axen.flutter.texture.uri.AssetURIParser;
-import org.axen.flutter.texture.uri.DrawableURIParser;
-import org.axen.flutter.texture.uri.FileURIParser;
-import org.axen.flutter.texture.uri.NetworkURIParser;
 import org.axen.flutter.texture.uri.URIParser;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class FrescoBitmapProvider implements ImageProvider<Bitmap, NativeImage> {
-
-    private final Map<SourceType, URIParser> parsers;
-    private final Context context;
+@Deprecated
+public class FrescoBitmapProvider extends NativeImageProvider<Bitmap>{
 
     public FrescoBitmapProvider(Context context) {
-        this.context = context;
-        parsers = new HashMap<>();
-        parsers.put(SourceType.NETWORK, new NetworkURIParser());
-        parsers.put(SourceType.DRAWABLE, new DrawableURIParser(this.context));
-        parsers.put(SourceType.ASSET, new AssetURIParser());
-        parsers.put(SourceType.FILE, new FileURIParser());
+        super(context);
     }
-
 
     @Override
     public Bitmap provide(NativeImage info) throws Throwable {
@@ -66,7 +49,10 @@ public class FrescoBitmapProvider implements ImageProvider<Bitmap, NativeImage> 
             CloseableReference<CloseableImage> imageReference = DataSources.waitForFinalResult(dataSource);
             try {
                 if (imageReference != null) {
-                    return ((CloseableBitmap)imageReference.get()).getUnderlyingBitmap();
+                    CloseableImage image = imageReference.get();
+                    if (image instanceof CloseableBitmap) {
+                        return ((CloseableBitmap)image).getUnderlyingBitmap();
+                    }
                 }
             } finally {
                 CloseableReference.closeSafely(imageReference);
