@@ -1,7 +1,9 @@
 group 'org.axen.flutter.fresco.flutter_fresco'
-version '1.0.5'
+version '1.0.9'
 
 buildscript {
+    ext.fresco = '2.4.0'
+
     repositories {
         google()
         mavenCentral()
@@ -32,7 +34,10 @@ android {
 }
 
 dependencies {
-//    api 'com.github.axen1314:flutter_texture_plugin:v1.0.4'
     api project(':flutter_texture_plugin')
-    api "com.facebook.fresco:fresco:2.6.0"
+    api "com.facebook.fresco:fresco:${fresco}"
+    api "com.facebook.fresco:animated-gif-lite:${fresco}"
+    api "com.facebook.fresco:animated-drawable:${fresco}"
+    api "com.facebook.fresco:animated-webp:${fresco}"
+    api "com.facebook.fresco:webpsupport:${fresco}"
 }
