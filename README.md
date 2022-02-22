@@ -10,7 +10,7 @@ dependencies:
     flutter_glide:
         git:
             url: 'https://github.com/axen1314/flutter_fresco.git'
-            ref: 'v1.0.5'
+            ref: 'v1.1.0'
 ```
 添加配置后，运行pub更新
 
