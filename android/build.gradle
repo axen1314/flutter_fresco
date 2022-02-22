@@ -1,5 +1,5 @@
 group 'org.axen.flutter.fresco.flutter_fresco'
-version '1.0.9'
+version '1.1.0'
 
 buildscript {
     ext.fresco = '2.4.0'
