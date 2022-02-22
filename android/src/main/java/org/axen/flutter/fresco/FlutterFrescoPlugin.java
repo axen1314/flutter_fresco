@@ -2,12 +2,12 @@ package org.axen.flutter.fresco;
 
 import android.content.Context;
 
-import org.axen.flutter.fresco.provider.FrescoDrawableProvider;
+import org.axen.flutter.fresco.provider.FrescoCloseableImageProvider;
+import org.axen.flutter.fresco.renderer.FrescoCloseableImageRenderer;
 import org.axen.flutter.texture.FlutterTexturePlugin;
 import org.axen.flutter.texture.constant.SourceType;
 import org.axen.flutter.texture.entity.NativeImage;
 import org.axen.flutter.texture.renderer.ImageRenderer;
-import org.axen.flutter.texture.renderer.SurfaceDrawableRenderer;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.view.TextureRegistry;
@@ -21,7 +21,7 @@ public class FlutterFrescoPlugin extends FlutterTexturePlugin implements Flutter
           Context context, 
           TextureRegistry.SurfaceTextureEntry entry, SourceType sourceType
   ) {
-    return new SurfaceDrawableRenderer(entry, new FrescoDrawableProvider(context));
+    return new FrescoCloseableImageRenderer(context, entry, new FrescoCloseableImageProvider(context));
   }
 
   @Override
