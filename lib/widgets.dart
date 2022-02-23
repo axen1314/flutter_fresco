@@ -118,7 +118,6 @@ class _FrescoState extends State<Fresco> {
   void dispose() {
     super.dispose();
     _releaseImage(widget._image);
-    _channel.setMethodCallHandler(null);
   }
 
 
@@ -158,7 +157,9 @@ class _FrescoState extends State<Fresco> {
       int height = value["height"];
       Size size = _caculateImageWidgetSize(width, height);
       NativeImageResult result = NativeImageResult(textureId, size);
-      _updateImage(result);
+      if (mounted) {
+        _updateImage(result);
+      }
     });
   }
 

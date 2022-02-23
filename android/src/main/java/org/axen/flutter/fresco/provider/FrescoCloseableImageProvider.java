@@ -35,6 +35,10 @@ public class FrescoCloseableImageProvider extends NativeImageProvider<CloseableR
         ImageRequest request = builder.build();
         ImagePipeline imagePipeline = Fresco.getImagePipeline();
         DataSource<CloseableReference<CloseableImage>> dataSource = imagePipeline.fetchDecodedImage(request, context);
-        return DataSources.waitForFinalResult(dataSource);
+        try {
+            return DataSources.waitForFinalResult(dataSource);
+        } finally {
+            dataSource.close();
+        }
     }
 }

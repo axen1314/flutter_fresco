@@ -47,13 +47,16 @@ public class FrescoCloseableImageRenderer extends SurfaceImageRenderer<Closeable
 
     @Override
     public void draw(Surface surface, CloseableReference<CloseableImage> image, Handler handler) {
-        CloseableImage img = image.get();
-        if (img instanceof CloseableStaticBitmap) {
-            drawStaticImage(surface, (CloseableStaticBitmap) img);
-        } else {
-            drawAnimatedImage(surface, img, handler);
+        try {
+            CloseableImage img = image.get();
+            if (img instanceof CloseableStaticBitmap) {
+                drawStaticImage(surface, (CloseableStaticBitmap) img);
+            } else {
+                drawAnimatedImage(surface, img, handler);
+            }
+        } finally {
+            CloseableReference.closeSafely(image);
         }
-        image.close();
     }
 
     private void drawStaticImage(Surface surface, CloseableStaticBitmap image) {
